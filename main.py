@@ -2,8 +2,7 @@ import io, os, json
 from math import atan 
 import numpy as np
 from PIL import Image
-import cv2
-import PyPDF2
+import cv2  ``
 from pdf2image import convert_from_path
 # needs ```brew install poppler
 
@@ -112,17 +111,3 @@ if __name__ == "__main__":
         marksheet.load_pdf_image(image, option["sheet"])
         marksheet.calibration(option["calibration"])
         print(marksheet.recognition(option["recodes"]))
-
-    # pdf = PyPDF2.PdfFileReader("test3.pdf")
-
-    # for p, page in enumerate(pdf.pages):
-    #     xObject = page['/Resources']['/XObject'].getObject()
-    #     for obj in xObject:
-    #         if xObject[obj]['/Subtype'] != '/Image' or xObject[obj]['/Filter'] != '/DCTDecode':
-    #             continue
-    #         image = Image.open(io.BytesIO(xObject[obj]._data)).convert('RGB')
-            
-    #         marksheet = Marksheet()
-    #         marksheet.load_pdf_image(image, option["sheet"])
-    #         marksheet.calibration(option["calibration"])
-    #         print(marksheet.recognition(option["recodes"]))
