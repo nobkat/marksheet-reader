@@ -2,7 +2,7 @@ import io, os, json
 from math import atan 
 import numpy as np
 from PIL import Image
-import cv2  ``
+import cv2
 from pdf2image import convert_from_path
 # needs ```brew install poppler
 
@@ -86,15 +86,18 @@ class Marksheet:
             values[np.sum(binary, axis=axis)!=1]=-1
 
             if recode_option["multidigit"]==True:
-                values = values[::-1]
-                values_ = 0
-                mul = 1
-                for digit in values:
-                    values_ += digit * mul
-                    mul *= 10
-                values = values_
+                if all(values)!=-1:
+                    values = values[::-1]
+                    values_ = 0
+                    mul = 1
+                    for digit in values:
+                        values_ += digit * mul
+                        mul *= 10
+                    values = values_
+                else:
+                    values = -1
 
-            recodes.append({"tags": recode_option["tags"], "values": values})
+            recodes.append(values)
         return recodes
 
 
