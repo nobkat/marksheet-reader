@@ -1,0 +1,25 @@
+{
+    "sheet" : {
+        "width" : 182,
+        "height" : 257,
+        "threshold" : 1.5
+    },
+    "calibration" : {
+        "marker_file" : "mark.png",
+        "marker_dpi" : 600,
+        "pos" :
+            [
+                {"x" : 169, "y" : 15},
+                {"x" : 13, "y" : 95}
+            ],
+        "window" :  10
+        
+    },
+    "recodes" : [
+        {
+            "box" : [131, 27.5, 171, 92.5],
+            "cols" : 10,
+            "rows" : 13
+        }
+    ]
+}
