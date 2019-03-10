@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import cv2
 from pdf2image import convert_from_path
+import xlwt
 # needs ```brew install poppler
 
 class Marksheet:
@@ -96,24 +97,42 @@ class Marksheet:
                     for digit in values:
                         values_ += digit * mul
                         mul *= 10
-                    values = values_
+                    values = np.array([values_])
                 else:
-                    values = -1
+                    values = np.array([-1])
 
-            recodes.append(values)
+            recodes.extend(values.tolist())
         return recodes
 
 
-if __name__ == "__main__":
+def write1d_to_excel(sheet, row, col, data):
+    for i, val in enumerate(data):
+        sheet.write(row, col+i, val) 
+
+def main(input_file, output_file):
     setting_json = 'setting.json'
     if os.path.exists(setting_json):
         with open(setting_json, 'r') as f:
             option = json.load(f)
 
-    images = convert_from_path("test4.pdf")
+    images = convert_from_path(input_file)
     
-    for image in images:
+    fields = []
+    for recode in option["recodes"]:
+        fields.extend(recode["fields"])
+    book = xlwt.Workbook()
+    sheet = book.add_sheet('sheet1')
+    write1d_to_excel(sheet, 0, 0, fields)
+
+    for idx, image in enumerate(images):
         marksheet = Marksheet()
         marksheet.load_pdf_image(np.array(image), option["sheet"])
         marksheet.calibration(option["calibration"])
-        print(marksheet.recognition(option["recodes"]))
+        values = marksheet.recognition(option["recodes"])
+
+        write1d_to_excel(sheet, idx+1, 0, values)
+
+    book.save(output_file)
+
+if __name__ == "__main__":
+    main("test.pdf","out.xls")
