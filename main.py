@@ -14,6 +14,7 @@ class Marksheet:
         width = sheet_option["width"]
         height = sheet_option["height"]
         self.threshold = sheet_option["threshold"]
+        self.std_dpm = sheet_option["std_dpm"]
 
         if image.shape[0]>image.shape[1]: # portrait
             self.dpm = image.shape[0] / height #dot per mm
@@ -34,26 +35,30 @@ class Marksheet:
         img = cv2.imread(cal_option["marker_file"])
         marker_img = cv2.resize(img, dsize=None, fx=(self.dpm * 25.4)/marker_dpi, fy=(self.dpm * 25.4)/marker_dpi)
         (marker_h, marker_w, _) = marker_img.shape
-        marks_pos = cal_option["pos"]        
+        marks_pos = np.array(cal_option["pos"])
         window = cal_option["window"]
 
-
-        self.mark_pos_x=[]
-        self.mark_pos_y=[]
+        marks_pos_measured=[]
 
         for mark_pos in marks_pos:
-            x1 = int((mark_pos["x"]-window)*self.dpm)
-            y1 = int((mark_pos["y"]-window)*self.dpm)
-            x2 = int((mark_pos["x"]+window)*self.dpm)
-            y2 = int((mark_pos["y"]+window)*self.dpm)
+            x1 = int((mark_pos[0]-window)*self.dpm)
+            y1 = int((mark_pos[1]-window)*self.dpm)
+            x2 = int((mark_pos[0]+window)*self.dpm)
+            y2 = int((mark_pos[1]+window)*self.dpm)
             result = cv2.matchTemplate(self.image[y1:y2,x1:x2,:], marker_img, cv2.TM_CCOEFF_NORMED)
             (x, y) = np.unravel_index(np.argmax(result), result.shape)
-            self.mark_pos_x.append(x + x1 + marker_w/2)
-            self.mark_pos_y.append(y + y1 + marker_h/2)
-
-        self.dx = (self.mark_pos_x[0]-marks_pos[0]["x"]*self.dpm)
-        self.dy = (self.mark_pos_y[0]-marks_pos[0]["y"]*self.dpm)
-            
+            marks_pos_measured.append([(x + x1 + marker_w/2), (y + y1 + marker_h/2)])
+        marks_pos_measured.append([
+            marks_pos_measured[0][0]-(marks_pos_measured[1][1]-marks_pos_measured[0][1]),
+            marks_pos_measured[0][1]+(marks_pos_measured[1][0]-marks_pos_measured[0][0])
+            ])
+        marks_pos = np.vstack((marks_pos,
+            [marks_pos[0][0]-(marks_pos[1][1]-marks_pos[0][1]),
+            marks_pos[0][1]+(marks_pos[1][0]-marks_pos[0][0])]
+            )) * self.std_dpm
+        M = cv2.getAffineTransform(np.array(marks_pos_measured, np.float32), np.array(marks_pos, np.float32))
+        self.image = cv2.warpAffine(self.image, M, self.image.shape[1::-1])
+    
     def recognition(self, recodes_option):
         recodes = []
         for recode_option in recodes_option:
@@ -62,11 +67,10 @@ class Marksheet:
             rows = recode_option["rows"]
             axis = 0 if recode_option["direction"]=="down" else 1
         
-            im_box = self.image[int(box[1]*self.dpm+self.dy):int(box[3]*self.dpm+self.dy),int(box[0]*self.dpm+self.dx):int(box[2]*self.dpm+self.dx),:]
+            im_box = self.image[int(box[1]*self.std_dpm):int(box[3]*self.std_dpm),int(box[0]*self.std_dpm):int(box[2]*self.std_dpm),:]
             (h, w, _) = im_box.shape
             mw = w/cols/4
             mh = h/rows/4
-
             levels = np.zeros((rows, cols))
             for y in range(rows):
                 for x in range(cols):
@@ -106,7 +110,7 @@ if __name__ == "__main__":
         with open(setting_json, 'r') as f:
             option = json.load(f)
 
-    images = convert_from_path("test3.pdf")
+    images = convert_from_path("test4.pdf")
     
     for image in images:
         marksheet = Marksheet()
