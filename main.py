@@ -1,4 +1,4 @@
-import io, os, json
+import sys, io, os, json
 from math import atan 
 import numpy as np
 from PIL import Image
@@ -135,4 +135,5 @@ def main(input_file, output_file):
     book.save(output_file)
 
 if __name__ == "__main__":
-    main("test.pdf","out.xls")
+
+    main(sys.argv[1],sys.argv[2])
