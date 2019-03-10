@@ -89,7 +89,7 @@ class Marksheet:
             values[np.sum(binary, axis=axis)!=1]=-1
 
             if recode_option["multidigit"]==True:
-                if all(values)!=-1:
+                if np.all(values!=-1):
                     values = values[::-1]
                     values_ = 0
                     mul = 1
