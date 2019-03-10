@@ -5,12 +5,8 @@ from PIL import Image
 import cv2
 from pdf2image import convert_from_path
 import xlwt
-# needs ```brew install poppler
 
 class Marksheet:
-    def __init__(self):
-        pass
-
     def load_pdf_image(self, image, sheet_option):
         width = sheet_option["width"]
         height = sheet_option["height"]
@@ -117,23 +113,43 @@ def main(input_file, output_file):
 
     images = convert_from_path(input_file)
     
-    fields = []
-    for recode in option["recodes"]:
-        fields.extend(recode["fields"])
-    book = xlwt.Workbook()
-    sheet = book.add_sheet('sheet1')
-    write1d_to_excel(sheet, 0, 0, fields)
+
+
+    values = []
+    has_score = True
+    has_answer = True
 
     for idx, image in enumerate(images):
         marksheet = Marksheet()
         marksheet.load_pdf_image(np.array(image), option["sheet"])
         marksheet.calibration(option["calibration"])
-        values = marksheet.recognition(option["recodes"])
+        value = marksheet.recognition(option["recodes"])
+        if value[0] == option["answer"]["score_id"]:
+            score = value
+            has_score = True
+        elif value[0] == option["answer"]["answer_id"]:
+            answer = value
+            has_answer = True
+        else:
+            values.append(value)
 
-        write1d_to_excel(sheet, idx+1, 0, values)
+    fields = []
 
+    book = xlwt.Workbook()
+    sheet = book.add_sheet('sheet1')
+
+    for recode in option["recodes"]:
+        fields.extend(recode["fields"])
+    if has_score and has_answer:
+        fields.insert(option["answer"]["score_field_idx"], "score")
+    write1d_to_excel(sheet, 0, 0, fields)
+
+    for idx, row in enumerate(values):
+        if has_score and has_answer:
+            row.insert(option["answer"]["score_field_idx"], 999)        
+        write1d_to_excel(sheet, idx+1, 0, row)
     book.save(output_file)
 
 if __name__ == "__main__":
-
-    main(sys.argv[1],sys.argv[2])
+    #main(sys.argv[1],sys.argv[2])
+    main("test.pdf","test.xls")

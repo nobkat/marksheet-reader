@@ -53,5 +53,10 @@
             "direction" : "right",
             "multidigit" : false
         }
-    ]
+    ],
+    "answer" : {
+        "score_id": 9999999,
+        "answer_id": 0,
+        "score_field_idx": 2
+    }
 }
