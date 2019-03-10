@@ -46,7 +46,7 @@ class Marksheet:
             x2 = int((mark_pos[0]+window)*self.dpm)
             y2 = int((mark_pos[1]+window)*self.dpm)
             result = cv2.matchTemplate(self.image[y1:y2,x1:x2,:], marker_img, cv2.TM_CCOEFF_NORMED)
-            (x, y) = np.unravel_index(np.argmax(result), result.shape)
+            (y, x) = np.unravel_index(np.argmax(result), result.shape)
             marks_pos_measured.append([(x + x1 + marker_w/2), (y + y1 + marker_h/2)])
         marks_pos_measured.append([
             marks_pos_measured[0][0]-(marks_pos_measured[1][1]-marks_pos_measured[0][1]),
