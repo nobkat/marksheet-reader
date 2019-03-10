@@ -15,20 +15,19 @@ class Marksheet:
         height = sheet_option["height"]
         self.threshold = sheet_option["threshold"]
 
-        imdata = np.asarray(image)
-        if imdata.shape[0]>imdata.shape[1]: # portrait
-            self.dpm = imdata.shape[0] / height #dot per mm
+        if image.shape[0]>image.shape[1]: # portrait
+            self.dpm = image.shape[0] / height #dot per mm
             c = int(sheet_option["corner_size"] * self.dpm)
-            if np.average(imdata[:c,:c,:])>np.average(imdata[-c:,-c:,:]):
-                image = image.rotate(180, expand=True)
+            if np.average(image[:c,:c,:])>np.average(image[-c:,-c:,:]):
+                image = np.rot90(image, 2)
         else:
-            self.dpm = imdata.shape[1] / height #dot per mm
+            self.dpm = image.shape[1] / height #dot per mm
             c = int(sheet_option["corner_size"] * self.dpm)
-            if np.average(imdata[-c:,:c,:])<np.average(imdata[:c,-c:,:]):
-                image = image.rotate(-90, expand=True)
+            if np.average(image[-c:,:c,:])<np.average(image[:c,-c:,:]):
+                image = np.rot90(image, 2)
             else:
-                image = image.rotate(90, expand=True)
-        self.image = np.array(image)
+                image = np.rot90(image, 3)
+        self.image = image
 
     def calibration(self, cal_option):
         marker_dpi = cal_option["marker_dpi"]
@@ -111,6 +110,6 @@ if __name__ == "__main__":
     
     for image in images:
         marksheet = Marksheet()
-        marksheet.load_pdf_image(image, option["sheet"])
+        marksheet.load_pdf_image(np.array(image), option["sheet"])
         marksheet.calibration(option["calibration"])
         print(marksheet.recognition(option["recodes"]))
