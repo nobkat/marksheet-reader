@@ -113,43 +113,51 @@ def main(input_file, output_file):
 
     images = convert_from_path(input_file)
     
-
+    fields = []
+    for idx,recode in enumerate(option["recodes"]):
+        if recode["fields"][0]=="type":
+            type_idx = idx
+        else:
+            fields.extend(recode["fields"])
 
     values = []
-    has_score = True
-    has_answer = True
+    has_score = False
+    has_answer = False
 
     for idx, image in enumerate(images):
         marksheet = Marksheet()
         marksheet.load_pdf_image(np.array(image), option["sheet"])
         marksheet.calibration(option["calibration"])
         value = marksheet.recognition(option["recodes"])
-        if value[0] == option["answer"]["score_id"]:
-            score = value
+        type = value.pop(type_idx)
+        if type == option["answer"]["score_id"]:
+            scores = value
             has_score = True
-        elif value[0] == option["answer"]["answer_id"]:
-            answer = value
+        elif type == option["answer"]["answer_id"]:
+            answers = value
             has_answer = True
         else:
             values.append(value)
 
-    fields = []
 
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
 
-    for recode in option["recodes"]:
-        fields.extend(recode["fields"])
+
     if has_score and has_answer:
         fields.insert(option["answer"]["score_field_idx"], "score")
     write1d_to_excel(sheet, 0, 0, fields)
 
     for idx, row in enumerate(values):
         if has_score and has_answer:
-            row.insert(option["answer"]["score_field_idx"], 999)        
+            total_score = 0
+            for value,answer,score in zip(row, answers, scores):
+                if score!=-1 and value==answer:
+                    total_score += score
+            row.insert(option["answer"]["score_field_idx"], total_score)        
         write1d_to_excel(sheet, idx+1, 0, row)
     book.save(output_file)
 
 if __name__ == "__main__":
     #main(sys.argv[1],sys.argv[2])
-    main("test.pdf","test.xls")
+    main("test6.pdf","test6.xls")
