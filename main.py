@@ -78,9 +78,8 @@ class Marksheet:
                         int(w*(x+1)/cols-mw)
                         ,1]
                     levels[y,x] = np.average(cell) 
-            std = np.std(levels)
-            avg = np.average(levels)
-            binary = (levels < avg - std*self.threshold) * 1
+            avg = np.mean(levels, axis=axis, keepdims=True)
+            binary = (levels < avg - self.threshold) * 1
 
             values = np.array(recode_option["value"])[np.argmax(binary, axis=axis)]
             values[np.sum(binary, axis=axis)!=1]=-1

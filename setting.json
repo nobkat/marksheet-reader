@@ -2,7 +2,7 @@
     "sheet" : {
         "width" : 182,
         "height" : 257,
-        "threshold" : 1,
+        "threshold" : 20,
         "corner_size" : 6,
         "std_dpm" : 5
     },
