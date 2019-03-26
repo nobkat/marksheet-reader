@@ -22,9 +22,9 @@ class Marksheet:
             self.dpm = image.shape[1] / height #dot per mm
             c = int(sheet_option["corner_size"] * self.dpm)
             if np.average(image[-c:,:c,:])<np.average(image[:c,-c:,:]):
-                image = np.rot90(image, 2)
-            else:
                 image = np.rot90(image, 3)
+            else:
+                image = np.rot90(image, 1)
         self.image = image
 
     def calibration(self, cal_option):
@@ -122,7 +122,6 @@ def main(input_file, output_file):
     values = []
     has_score = False
     has_answer = False
-
     for idx, image in enumerate(images):
         marksheet = Marksheet()
         marksheet.load_pdf_image(np.array(image), option["sheet"])
@@ -138,10 +137,8 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
-
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
-
 
     if has_score and has_answer:
         fields.insert(option["answer"]["score_field_idx"], "score")
@@ -158,5 +155,5 @@ def main(input_file, output_file):
     book.save(output_file)
 
 if __name__ == "__main__":
-    #main(sys.argv[1],sys.argv[2])
-    main("test6.pdf","test6.xls")
+    main(sys.argv[1],sys.argv[2])
+    # main("20190326.pdf","20190326.xls")
