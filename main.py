@@ -142,7 +142,7 @@ def main(input_file, output_file):
                 has_answer = True
             else:
                 values.append(value)
-        print(page, len(images))
+        del images
 
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
@@ -162,5 +162,5 @@ def main(input_file, output_file):
     book.save(output_file)
 
 if __name__ == "__main__":
-    main(sys.argv[1],sys.argv[2])
-    # main("20190507.pdf","20190507.xls")
+    # main(sys.argv[1],sys.argv[2])
+    main("20190507.pdf","20190507.xls")
