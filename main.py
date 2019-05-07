@@ -162,5 +162,5 @@ def main(input_file, output_file):
     book.save(output_file)
 
 if __name__ == "__main__":
-    # main(sys.argv[1],sys.argv[2])
-    main("20190507.pdf","20190507.xls")
+    main(sys.argv[1],sys.argv[2])
+    # main("20190507.pdf","20190507.xls")

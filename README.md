@@ -13,3 +13,4 @@ sudo apt-get install poppler-utils
 python3 main.py input_file output_file
 ````
 input_file is pdf file and output_file is xls file. (not xlsx file)
+
