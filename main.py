@@ -142,6 +142,7 @@ def main(input_file, output_file):
                 has_answer = True
             else:
                 values.append(value)
+            del image
         del images
         gc.collect()
 
