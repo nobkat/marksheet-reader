@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import cv2
 from pdf2image import convert_from_path
+from PyPDF2 import PdfFileReader
 import xlwt
 
 class Marksheet:
@@ -110,8 +111,6 @@ def main(input_file, output_file):
         with open(setting_json, 'r') as f:
             option = json.load(f)
 
-    images = convert_from_path(input_file)
-    
     fields = []
     for idx,recode in enumerate(option["recodes"]):
         if recode["fields"][0]=="type":
@@ -122,20 +121,28 @@ def main(input_file, output_file):
     values = []
     has_score = False
     has_answer = False
-    for idx, image in enumerate(images):
-        marksheet = Marksheet()
-        marksheet.load_pdf_image(np.array(image), option["sheet"])
-        marksheet.calibration(option["calibration"])
-        value = marksheet.recognition(option["recodes"])
-        type = value.pop(type_idx)
-        if type == option["answer"]["score_id"]:
-            scores = value
-            has_score = True
-        elif type == option["answer"]["answer_id"]:
-            answers = value
-            has_answer = True
-        else:
-            values.append(value)
+
+    pdf = PdfFileReader(open(input_file, 'rb'))
+    pagenum = pdf.getNumPages()
+
+    for page in range(pagenum):
+        images = convert_from_path(input_file, first_page=page+1, last_page=page+1)
+
+        for idx, image in enumerate(images):
+            marksheet = Marksheet()
+            marksheet.load_pdf_image(np.array(image), option["sheet"])
+            marksheet.calibration(option["calibration"])
+            value = marksheet.recognition(option["recodes"])
+            type = value.pop(type_idx)
+            if type == option["answer"]["score_id"]:
+                scores = value
+                has_score = True
+            elif type == option["answer"]["answer_id"]:
+                answers = value
+                has_answer = True
+            else:
+                values.append(value)
+        print(page, len(images))
 
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
@@ -156,4 +163,4 @@ def main(input_file, output_file):
 
 if __name__ == "__main__":
     main(sys.argv[1],sys.argv[2])
-    # main("20190326.pdf","20190326.xls")
+    # main("20190507.pdf","20190507.xls")
