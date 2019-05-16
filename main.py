@@ -143,6 +143,9 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
+    os.system("rm -rf ./jpeg/*.jpg")
+
+
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
 
