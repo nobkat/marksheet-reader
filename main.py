@@ -127,7 +127,7 @@ def main(input_file, output_file):
     img_files = glob.glob("./jpeg/*.jpg")
     
     for img_file in img_files:
-        image = Image.open(img_file)
+        image = Image.open(img_file).convert("RGB")
 
         marksheet = Marksheet()
         marksheet.load_pdf_image(np.array(image), option["sheet"])
@@ -167,4 +167,4 @@ if __name__ == "__main__":
     if len(sys.argv)==3:
         main(sys.argv[1],sys.argv[2])
     else:
-        main("20190507.pdf","20190507.xls")
+        main("01.pdf","01.xls")
