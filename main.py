@@ -124,7 +124,7 @@ def main(input_file, output_file):
     # Read PDF file
     os.makedirs("./jpeg", exist_ok=True)
     os.system("pdfimages -j " + input_file + " ./jpeg/out.jpg")
-    img_files = glob.glob("./jpeg/*.jpg")
+    img_files = sorted(glob.glob("./jpeg/*.jpg"))
     
     for img_file in img_files:
         image = Image.open(img_file).convert("RGB")
