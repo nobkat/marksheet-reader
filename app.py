@@ -4,7 +4,7 @@ from werkzeug import secure_filename
 app = Flask(__name__)
 
 UPLOAD_FOLDER = './uploads'
-ALLOWED_EXTENSIONS = set(['pdf'])
+ALLOWED_EXTENSIONS = set(['pdf', 'PDF', 'zip', 'ZIP'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.urandom(24)
 
