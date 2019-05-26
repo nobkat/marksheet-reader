@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/marksheet/send" enctype="multipart/form-data">
+	<input type="file" id="img_file" name="img_file" class="col-sm-4">
+	<input type="submit" value="submit" class="btn">
+</form>
+{% if download_url %}
+<p>Download <a href="{{ download_url }}">excel file</a></p>
+{% endif %}
+{% endblock %}
