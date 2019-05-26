@@ -143,7 +143,7 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
-    os.system("rm -rf ./images/*.jpg")
+    os.system("rm -rf ./images/*.png")
 
 
     book = xlwt.Workbook()
