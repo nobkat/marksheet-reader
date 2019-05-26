@@ -143,7 +143,7 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
-    os.system("rm -rf ./jpeg/*.jpg")
+    #os.system("rm -rf ./jpeg/*.jpg")
 
 
     book = xlwt.Workbook()
@@ -167,4 +167,4 @@ if __name__ == "__main__":
     if len(sys.argv)==3:
         main(sys.argv[1],sys.argv[2])
     else:
-        main("01.pdf","01.xls")
+        main("03-1.pdf","03-1.xls")
