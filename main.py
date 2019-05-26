@@ -4,6 +4,8 @@ import numpy as np
 from PIL import Image
 import cv2
 import xlwt
+import zipfile
+
 
 class Marksheet:
     def load_pdf_image(self, image, sheet_option):
@@ -109,6 +111,8 @@ def main(input_file, output_file):
     if os.path.exists(setting_json):
         with open(setting_json, 'r') as f:
             option = json.load(f)
+    tmp_image_path = option["tmp_image_path"]
+    img_ext_list = option["img_ext_list"]
 
     fields = []
     for idx,recode in enumerate(option["recodes"]):
@@ -122,9 +126,17 @@ def main(input_file, output_file):
     has_answer = False
 
     # Read PDF file
-    os.makedirs("./images", exist_ok=True)
-    os.system("pdfimages -png " + input_file + " ./images/out.png")
-    img_files = sorted(glob.glob("./images/*.png"))
+    os.makedirs(tmp_image_path, exist_ok=True)
+    root, ext = os.path.splitext(input_file)
+    if ext in ['.pdf', '.PDF']:
+        os.system("pdfimages -j -jp2 " + input_file + " ./images/img")
+    elif ext in ['.zip', '.ZIP']:
+        with zipfile.ZipFile(input_file) as existing_zip:
+            existing_zip.extractall(tmp_image_path)
+    img_files = []
+    for ext in img_ext_list:
+        img_files.extend(glob.glob(os.path.join(tmp_image_path, "./**/*." + ext), recursive=True))
+    img_files = sorted(img_files)
     
     for img_file in img_files:
         image = Image.open(img_file).convert("RGB")
@@ -143,7 +155,7 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
-    os.system("rm -rf ./images/*.png")
+    os.system("rm -rf " + os.path.join(tmp_image_path, "*"))
 
 
     book = xlwt.Workbook()
@@ -167,4 +179,4 @@ if __name__ == "__main__":
     if len(sys.argv)==3:
         main(sys.argv[1],sys.argv[2])
     else:
-        main("03-1.pdf","03-1.xls")
+        main("file.zip","out.xls")
