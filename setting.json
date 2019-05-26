@@ -1,4 +1,6 @@
 {
+    "tmp_image_path": "./images",
+    "img_ext_list": ["jpg", "JPG", "JPEG", "jpeg", "jp2", "JP2", "png", "PNG", "tiff", "TIFF", "tif", "TIF", "pbm", "PBM"],
     "sheet" : {
         "width" : 182,
         "height" : 257,
