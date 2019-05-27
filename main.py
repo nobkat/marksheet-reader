@@ -126,6 +126,7 @@ def main(input_file, output_file):
     has_answer = False
 
     # Read PDF file
+    os.system("rm -rf " + os.path.join(tmp_image_path, "*"))
     os.makedirs(tmp_image_path, exist_ok=True)
     root, ext = os.path.splitext(input_file)
     if ext in ['.pdf', '.PDF']:
