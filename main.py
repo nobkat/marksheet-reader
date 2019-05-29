@@ -114,6 +114,7 @@ def main(input_file, output_file):
     tmp_image_path = option["tmp_image_path"]
     img_ext_list = option["img_ext_list"]
 
+    # Construct fields
     fields = []
     for idx,recode in enumerate(option["recodes"]):
         if recode["fields"][0]=="type":
@@ -121,11 +122,7 @@ def main(input_file, output_file):
         else:
             fields.extend(recode["fields"])
 
-    values = []
-    has_score = False
-    has_answer = False
-
-    # Read PDF file
+    # Read PDF/ZIP file
     os.system("rm -rf " + os.path.join(tmp_image_path, "*"))
     os.makedirs(tmp_image_path, exist_ok=True)
     root, ext = os.path.splitext(input_file)
@@ -139,6 +136,11 @@ def main(input_file, output_file):
         img_files.extend(glob.glob(os.path.join(tmp_image_path, "./**/*." + ext), recursive=True))
     img_files = sorted(img_files)
     
+    # Read and recognize each page
+    values = []
+    has_score = False
+    has_answer = False
+
     for img_file in img_files:
         image = Image.open(img_file).convert("RGB")
 
@@ -156,16 +158,19 @@ def main(input_file, output_file):
         else:
             values.append(value)
 
+    # Remove temporary images
     os.system("rm -rf " + os.path.join(tmp_image_path, "*"))
 
-
+    # Create excel workbook and sheet
     book = xlwt.Workbook()
     sheet = book.add_sheet('sheet1')
 
+    # Add score field if score and answer sheets exist
     if has_score and has_answer:
         fields.insert(option["answer"]["score_field_idx"], "score")
     write1d_to_excel(sheet, 0, 0, fields)
 
+    # Add recodes to excel sheet
     for idx, row in enumerate(values):
         if has_score and has_answer:
             total_score = 0
