@@ -77,7 +77,7 @@ class Marksheet:
                         int(h*(y+1)/rows-mh),
                         int(w*x/cols+mw):
                         int(w*(x+1)/cols-mw)
-                        ,1]
+                        ,2]
                     levels[y,x] = np.average(cell) 
             avg = np.mean(levels, axis=axis, keepdims=True)
             binary = (levels < avg - self.threshold) * 1
@@ -185,4 +185,4 @@ if __name__ == "__main__":
     if len(sys.argv)==3:
         main(sys.argv[1],sys.argv[2])
     else:
-        main("file.zip","out.xls")
+        main("./sample/1-1.pdf","out.xls")
